@@ -1,0 +1,6 @@
+__pycache__/
+.ruff_cache/
+logs/
+result/
+*.pptx
+.harmonyrun-runtime-config.yaml

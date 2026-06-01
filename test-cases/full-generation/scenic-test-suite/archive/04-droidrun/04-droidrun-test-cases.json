@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/HarmonyOS-AI/json-schema/main/droidrun/test_suite.schema.json",
+  "suite": {
+    "id": "scenic_test_suite",
+    "name": "旅游景区服务 测试套件",
+    "app_package": "com.atomicservice.6917560304091745774",
+    "app_card": "file:./04-droidrun--app-card.md",
+    "agent_prompt": "file:./04-droidrun--agent-prompt.md"
+  },
+  "test_cases": [
+    {
+      "id": "C-001",
+      "title": "查看景区公告详情",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在首页",
+      "test_steps": [
+        {
+          "action": "在首页滑动至【景区公告】区域 (API: getAnnouncementList)",
+          "checkpoint": "页面跳转到公告列表页，每条公告信息显示公告标题和发布日期"
+        },
+        {
+          "action": "点击公告列表中的任意一条公告条目",
+          "checkpoint": "页面跳转到公告详情页，从上到下依次显示图片、公告标题、发布时间和公告内容"
+        }
+      ],
+      "expected_result": "首页公告区域可跳转到公告列表页，列表展示所有公告摘要；点击任意公告可进入详情页查看完整内容和图片"
+    },
+    {
+      "id": "C-002",
+      "title": "浏览门票列表并查看详情",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在首页",
+      "test_steps": [
+        {
+          "action": "点击底部 TabBar 中的【门票】Tab 进入门票页面",
+          "checkpoint": "门票页面正常显示，包含门票分类列表（如成人票、儿童票、学生票等）"
+        },
+        {
+          "action": "点击门票列表中的第一项门票 (API: getTicketList)",
+          "checkpoint": "页面跳转到门票详情页，显示门票名称、价格、有效期说明和【预订须知】板块"
+        }
+      ],
+      "expected_result": "门票页面展示景区可预订门票分类列表，点击门票可查看包含价格、说明和预订须知的详情页"
+    },
+    {
+      "id": "C-003",
+      "title": "预订门票并确认订单",
+      "level": "L0",
+      "preconditions": "已进入门票详情页（从 C-002 继续）",
+      "test_steps": [
+        {
+          "action": "在门票详情页点击【立即预订】按钮",
+          "checkpoint": "页面跳转到预订表单页，显示【选择日期】日期选择器和【数量】选择器"
+        },
+        {
+          "action": "在日期选择器中选择一个可预订日期，在数量选择器中选择数量为 1",
+          "checkpoint": "日期和数量已更新显示"
+        },
+        {
+          "action": "在预订人信息区域分别填写预订人姓名、联系电话和身份证号",
+          "checkpoint": "预订人姓名、联系电话和身份证号已正确输入且符合格式要求"
+        },
+        {
+          "action": "收起输入键盘",
+          "checkpoint": "【确认预订】按钮未被输入法遮挡，可正常点击"
+        },
+        {
+          "action": "点击【确认预订】按钮 (API: bookTicket)",
+          "checkpoint": "页面跳转到订单确认页，显示预订摘要（门票名称、日期、数量、旅客信息、金额合计）和【立即支付】按钮"
+        }
+      ],
+      "expected_result": "用户可选择游览日期和数量、填写旅客信息完成门票预订，订单确认页正确显示包含旅客信息的预订摘要和支付入口"
+    },
+    {
+      "id": "C-004",
+      "title": "查看景区地图并选择景点",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在首页",
+      "test_steps": [
+        {
+          "action": "点击底部 TabBar 中的【导览】Tab 进入导览页面",
+          "checkpoint": "导览页面显示景区地图，地图上标注有多个景点标记点"
+        },
+        {
+          "action": "点击地图上的任意一个景点标记点 (API: getScenicSpotMap)",
+          "checkpoint": "弹出景点信息卡片，显示景点名称和简短简介文字"
+        },
+        {
+          "action": "在景点信息卡片上点击【查看详情】",
+          "checkpoint": "页面跳转到景点详情页，显示景点名称、详细介绍、图片和【语音讲解】按钮"
+        }
+      ],
+      "expected_result": "导览页显示景区地图和景点标记，点击标记可弹出信息卡片，进入详情页可查看完整景点介绍和语音讲解入口"
+    },
+    {
+      "id": "C-005",
+      "title": "播放景点语音讲解",
+      "level": "L0",
+      "preconditions": "已进入景点详情页（从 C-004 继续）",
+      "test_steps": [
+        {
+          "action": "在景点详情页点击【语音讲解】按钮 (API: playVoiceGuide)",
+          "checkpoint": "界面显示音频播放进度条或播放状态指示器（如'加载中…'或'播放中…'）"
+        },
+        {
+          "action": "等待 2 秒让音频加载并开始播放",
+          "checkpoint": "播放进度条开始走动或播放按钮切换为【暂停】图标，表示音频正在播放中"
+        }
+      ],
+      "expected_result": "点击语音讲解后应用加载并开始播放景点语音介绍，播放状态正确切换为播放中状态，按钮变为暂停图标"
+    }
+  ]
+}

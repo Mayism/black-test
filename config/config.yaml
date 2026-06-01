@@ -1,0 +1,41 @@
+# Project runtime configuration for PRD -> HarmonyRun testcase generation.
+# CLI arguments override these values.
+
+paths:
+  # Generated testcase files are grouped by the PRD subdirectory:
+  # prd/requirement/foo.md -> test-cases/requirement/foo-test-suite/
+  output_root: test-cases
+
+  # HarmonyRun reports are grouped by the same PRD subdirectory:
+  # prd/requirement/foo.md -> result/requirement/<suite_id>/test_<timestamp>_<uuid>/
+  result_root: result
+
+app:
+  # Written into generated JSON as suite.app_package.
+  bundlename: com.atomicservice.6917560304091745774
+
+opencode:
+  host: 127.0.0.1
+  port: 4096
+  model: null
+  agent: null
+  timeout_minutes: 90
+  keep_server: false
+
+workflow:
+  # true = only generate testcase files; false = generate then run harmonyrun test.
+  generate_only: false
+  dry_run: false
+
+harmonyrun:
+  enabled: true
+  # Optional base HarmonyRun config. null means:
+  # 1. HARMONYRUN_CONFIG if set
+  # 2. ~/.config/harmonyrun/config.yaml if present
+  # The script copies it and only overrides logging.trajectory_path for this run.
+  config: null
+  case: null
+  level: null
+  devices: []
+  save_trajectory: step
+  ignore_test_failure: false

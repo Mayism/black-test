@@ -1,0 +1,168 @@
+{
+  "$schema": "https://raw.githubusercontent.com/HarmonyOS-AI/json-schema/main/droidrun/test_suite.schema.json",
+  "suite": {
+    "id": "scenic_test_suite",
+    "name": "景区旅游服务 测试套件",
+    "app_package": "com.atomicservice.6917560304091745774",
+    "app_card": "file:./scenic-app-card.md",
+    "agent_prompt": "file:./scenic-agent-prompt.md"
+  },
+  "test_cases": [
+    {
+      "id": "MUST-01",
+      "title": "首页TabBar与轮播展示",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "确认底部TabBar显示【首页】、【门票】、【导览】、【我的】四个标签，【首页】标签处于高亮选中状态",
+          "checkpoint": "底部TabBar完整可见，【首页】标签高亮选中，【门票】、【导览】、【我的】标签可见"
+        },
+        {
+          "action": "查看页面上方轮播图区域",
+          "checkpoint": "页面顶部可见轮播图区域，展示景区宣传图片，轮播指示器可见"
+        },
+        {
+          "action": "查看轮播图下方的服务导航模块",
+          "checkpoint": "页面可见服务导航网格区域，包含【文旅商城】、【票务预订】、【餐饮住宿】、【游览线路】等图标入口"
+        }
+      ],
+      "expected_result": "首页完整展示底部TabBar（首页高亮）、顶部轮播图区和下方服务导航入口模块，页面不空白"
+    },
+    {
+      "id": "MUST-02",
+      "title": "门票Tab浏览门票列表",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击底部标签【门票】",
+          "checkpoint": "页面切换到【门票】页，底部【门票】标签高亮选中"
+        },
+        {
+          "action": "查看门票分类列表区域",
+          "checkpoint": "页面展示门票分类列表，至少1条门票条目可见，包含门票名称和价格信息"
+        }
+      ],
+      "expected_result": "门票页展示门票分类列表，至少可见1条门票条目含名称和价格"
+    },
+    {
+      "id": "MUST-03",
+      "title": "导览Tab地图景点展示",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击底部标签【导览】",
+          "checkpoint": "页面切换到【导览】页，底部【导览】标签高亮选中"
+        },
+        {
+          "action": "如果系统弹出位置权限授权弹窗，点击【允许】",
+          "checkpoint": "位置权限弹窗已处理，权限已允许"
+        },
+        {
+          "action": "查看地图区域与景点标记",
+          "checkpoint": "页面展示地图区域，可见景点标记或景点名称入口"
+        }
+      ],
+      "expected_result": "导览页展示地图区域，至少可见景点标记或景点名称入口"
+    },
+    {
+      "id": "MUST-04",
+      "title": "我的Tab用户信息展示",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击底部标签【我的】",
+          "checkpoint": "页面切换到【我的】页，底部【我的】标签高亮选中"
+        },
+        {
+          "action": "查看用户信息卡区域",
+          "checkpoint": "页面顶部展示用户信息卡，显示【关联账户】或手机号信息"
+        },
+        {
+          "action": "查看用户信息卡下方的功能入口列表",
+          "checkpoint": "页面展示【订单管理】、【旅客管理】、【地址管理】等功能入口"
+        }
+      ],
+      "expected_result": "我的页展示用户信息卡（显示关联账户或手机号）、订单管理、旅客管理、地址管理入口"
+    },
+    {
+      "id": "SHOULD-01",
+      "title": "首页热门景点模块展示",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "在首页向下滚动，查找【热门景点】模块",
+          "checkpoint": "页面出现【热门景点】或类似景点推荐模块标题"
+        },
+        {
+          "action": "查看热门景点模块的卡片内容",
+          "checkpoint": "热门景点区域至少展示1张景点卡片，卡片包含主图和景点名称"
+        }
+      ],
+      "expected_result": "首页展示热门景点模块，至少1张景点卡片含主图和名称"
+    },
+    {
+      "id": "SHOULD-02",
+      "title": "首页攻略游记模块展示",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "在首页查找【攻略游记】模块或游记列表区域",
+          "checkpoint": "页面出现【攻略游记】或类似游记模块标题"
+        },
+        {
+          "action": "查看游记列表内容",
+          "checkpoint": "攻略游记区域至少展示1条游记条目，包含标题或封面信息"
+        }
+      ],
+      "expected_result": "首页展示攻略游记模块，至少1条游记条目含标题或封面"
+    },
+    {
+      "id": "SHOULD-03",
+      "title": "门票列表点击查看详情",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击底部标签【门票】",
+          "checkpoint": "页面切换到【门票】页，底部【门票】标签高亮选中"
+        },
+        {
+          "action": "在门票分类列表中点击第一条可点击的门票条目；如果当前列表无可点击条目，判定为 DATA_INSUFFICIENT 并结束用例",
+          "checkpoint": "页面跳转到门票详情页"
+        },
+        {
+          "action": "查看门票详情页内容",
+          "checkpoint": "详情页展示门票名称、价格、说明信息，底部可见【预订】或类似操作按钮"
+        }
+      ],
+      "expected_result": "进入门票详情页，展示门票名称、价格、说明和预订入口"
+    },
+    {
+      "id": "SHOULD-04",
+      "title": "未关联账号点击订单入口引导关联",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在【首页】；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击底部标签【我的】",
+          "checkpoint": "页面切换到【我的】页，顶部展示用户信息卡"
+        },
+        {
+          "action": "如果用户信息卡显示【关联账户】，点击【订单管理】入口",
+          "checkpoint": "弹出账号关联引导弹窗，标题包含账号关联或授权许可字样，不直接进入订单列表"
+        },
+        {
+          "action": "如果用户信息卡显示手机号或【取消关联】，则标志当前测试环境账号已关联，不作为用例失败",
+          "checkpoint": "确认当前测试环境账号已关联，跳过未关联状态校验"
+        }
+      ],
+      "expected_result": "未关联账号时点击订单管理入口弹出账号关联引导，不直接进入订单列表；已关联账号时跳过校验"
+    }
+  ]
+}

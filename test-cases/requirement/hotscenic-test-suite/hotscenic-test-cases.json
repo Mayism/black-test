@@ -1,0 +1,122 @@
+{
+  "$schema": "https://raw.githubusercontent.com/HarmonyOS-AI/json-schema/main/droidrun/test_suite.schema.json",
+  "suite": {
+    "id": "hotscenic_test_suite",
+    "name": "hotscenic 测试套件",
+    "app_package": "com.atomicservice.6917560304091745774",
+    "app_card": "file:./hotscenic-app-card.md",
+    "agent_prompt": "file:./hotscenic-agent-prompt.md"
+  },
+  "test_cases": [
+    {
+      "id": "MUST-01",
+      "title": "首页热门景点模块展示",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "等待首页内容加载完成",
+          "checkpoint": "首页内容区域加载完成，热门景点模块可见"
+        },
+        {
+          "action": "查看【热门景点】模块区域",
+          "checkpoint": "模块显示标题【热门景点】和【更多】入口，至少 1 张热门景点卡片展示主图和名称"
+        }
+      ],
+      "expected_result": "首页热门景点模块完整展示，包含模块标题、更多入口和热门景点卡片（卡片展示景点主图和景点名称）"
+    },
+    {
+      "id": "MUST-02",
+      "title": "点击热门景点卡片进入详情页",
+      "level": "L0",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击热门景点模块中第一张景点卡片",
+          "checkpoint": "页面跳转到景点详情页，标题栏显示返回按钮和景点名称"
+        },
+        {
+          "action": "查看景点详情页头部区域",
+          "checkpoint": "显示景点名称、景点头图和景区标签"
+        },
+        {
+          "action": "向下滑动查看详情页中部内容",
+          "checkpoint": "显示景点地址、景点介绍正文区域，以及【语音讲解】按钮和【导航】按钮"
+        },
+        {
+          "action": "继续向下滑动查看详情页底部",
+          "checkpoint": "显示图片/视频区域，可见图片缩略图列表"
+        }
+      ],
+      "expected_result": "景点详情页展示完整的景点信息，包括景点名称、头图、标签、地址、介绍正文、图片列表，页面提供语音讲解和导航入口"
+    },
+    {
+      "id": "SHOULD-01",
+      "title": "点击更多进入景点列表页",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击热门景点模块右上角【更多】入口",
+          "checkpoint": "页面跳转到景点列表页，标题栏显示返回按钮和【景点列表】标题"
+        },
+        {
+          "action": "查看景点列表页结构",
+          "checkpoint": "顶部展示轮播 Banner，下方至少 1 条景点条目显示封面、名称、标签和缩略图"
+        }
+      ],
+      "expected_result": "景点列表页展示全量景点列表，包含顶部轮播 Banner 和景点条目（封面、名称、标签、缩略图）"
+    },
+    {
+      "id": "SHOULD-02",
+      "title": "景点列表页点击景点进入详情页",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击热门景点模块右上角【更多】入口",
+          "checkpoint": "页面跳转到景点列表页，标题栏显示返回按钮和【景点列表】标题"
+        },
+        {
+          "action": "点击景点列表中第一条景点条目",
+          "checkpoint": "页面跳转到景点详情页，显示景点名称、景点头图和景区标签"
+        }
+      ],
+      "expected_result": "从景点列表页点击景点条目后，进入对应景点的详情页，包含名称、头图、标签等基础信息"
+    },
+    {
+      "id": "SHOULD-03",
+      "title": "详情页语音讲解功能",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击热门景点模块中第一张景点卡片",
+          "checkpoint": "页面跳转到景点详情页，显示景点基本信息"
+        },
+        {
+          "action": "点击详情页中的【语音讲解】按钮",
+          "checkpoint": "语音讲解开始播放，【语音讲解】按钮状态变化为播放中，或页面底部出现音频播放提示"
+        }
+      ],
+      "expected_result": "点击语音讲解按钮后，系统开始播报景点介绍内容，UI 显示播放中状态"
+    },
+    {
+      "id": "SHOULD-04",
+      "title": "详情页地图导航功能",
+      "level": "L1",
+      "preconditions": "应用已启动并停留在首页；网络连接正常",
+      "test_steps": [
+        {
+          "action": "点击热门景点模块中第一张景点卡片",
+          "checkpoint": "页面跳转到景点详情页，显示景点基本信息"
+        },
+        {
+          "action": "点击详情页中的【导航】按钮",
+          "checkpoint": "跳转至系统地图应用，地图页面或路线规划界面加载完成"
+        }
+      ],
+      "expected_result": "点击导航按钮后，系统拉起地图应用并展示目标景点的导航路线或位置信息"
+    }
+  ]
+}
