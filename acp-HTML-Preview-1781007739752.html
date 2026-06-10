@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>景区元服务原型</title>
+<style>
+:root{
+  --primary:#2E7D32;--primary-light:#81C784;--primary-dark:#1B5E20;
+  --accent:#FF8F00;--accent-light:#FFB300;
+  --bg:#F5F5F0;--bg-card:#FFFFFF;--bg-section:#E8F5E9;
+  --text-primary:#1A1A1A;--text-secondary:#5F6368;--text-tertiary:#9AA0A6;
+  --border:#E0E0E0;--shadow:0 2px 8px rgba(0,0,0,0.08);
+  --radius:12px;--radius-sm:8px;--radius-lg:16px;
+  --tab-height:56px;--header-height:56px;
+  --margin:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'HarmonyOS Sans','PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text-primary);
+  overflow:hidden;height:100vh;width:100vw;
+  max-width:430px;margin:0 auto;position:relative;
+}
+/* Phone Frame */
+.phone-frame{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  background:var(--bg);overflow:hidden;position:relative;
+}
+/* Status Bar */
+.status-bar{
+  height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:transparent;position:relative;z-index:100;
+  flex-shrink:0;
+}
+.status-bar .time{font-size:14px;font-weight:600;}
+.status-bar .capsule{
+  width:96px;height:32px;border-radius:16px;
+  background:rgba(255,255,255,0.65);backdrop-filter:blur(12px);
+  border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;
+  justify-content:center;gap:6px;
+}
+.capsule-bar{width:14px;height:14px;border-radius:50%;background:var(--primary);}
+.capsule-line{width:1px;height:12px;background:rgba(0,0,0,0.12);}
+.capsule-close{width:10px;height:10px;position:relative;}
+.capsule-close::before,.capsule-close::after{
+  content:'';position:absolute;width:12px;height:1.5px;background:#333;
+  top:50%;left:50%;border-radius:1px;
+}
+.capsule-close::before{transform:translate(-50%,-50%) rotate(45deg);}
+.capsule-close::after{transform:translate(-50%,-50%) rotate(-45deg);}
+/* Content Area */
+.content-area{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+}
+.content-area::-webkit-scrollbar{display:none;}
+.page{display:none;min-height:100%;padding-bottom:16px;}
+.page.active{display:block;}
+/* ===== HOME PAGE ===== */
+.home-header{
+  padding:8px 16px 12px;display:flex;align-items:center;gap:12px;
+}
+.search-box{
+  flex:1;height:40px;border-radius:20px;background:#fff;
+  display:flex;align-items:center;padding:0 14px;gap:8px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.search-box svg{width:18px;height:18px;color:var(--text-tertiary);flex-shrink:0;}
+.search-box span{font-size:13px;color:var(--text-tertiary);}
+.header-icon{
+  width:40px;height:40px;border-radius:50%;background:var(--primary);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.header-icon svg{width:20px;height:20px;color:#fff;}
+/* Banner */
+.banner{
+  margin:0 16px 16px;border-radius:var(--radius-lg);height:160px;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 60%,#A5D6A7 100%);
+  position:relative;overflow:hidden;padding:20px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.banner::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:140px;height:140px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+}
+.banner::after{
+  content:'';position:absolute;bottom:-30px;left:40%;
+  width:200px;height:80px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+}
+.banner-mountain{
+  position:absolute;bottom:0;right:20px;width:120px;height:100px;
+  opacity:0.15;
+}
+.banner h2{font-size:22px;color:#fff;font-weight:700;position:relative;z-index:1;text-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.banner p{font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px;position:relative;z-index:1;}
+.banner-dots{
+  display:flex;gap:6px;margin-top:12px;position:relative;z-index:1;
+}
+.banner-dots span{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,0.4);}
+.banner-dots span.active{width:18px;background:#fff;}
+/* Feature Grid */
+.section-title{
+  font-size:17px;font-weight:700;padding:0 16px;margin:8px 0 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-title .more{font-size:12px;color:var(--text-tertiary);font-weight:400;}
+.feature-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  padding:0 16px;margin-bottom:20px;
+}
+.feature-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 8px;border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);cursor:pointer;transition:transform 0.2s;
+}
+.feature-item:active{transform:scale(0.95);}
+.feature-icon{
+  width:44px;height:44px;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;
+}
+.feature-icon svg{width:24px;height:24px;color:#fff;}
+.fi-green{background:linear-gradient(135deg,#2E7D32,#66BB6A);}
+.fi-orange{background:linear-gradient(135deg,#FF8F00,#FFB300);}
+.fi-blue{background:linear-gradient(135deg,#1565C0,#42A5F5);}
+.fi-purple{background:linear-gradient(135deg,#7B1FA2,#BA68C8);}
+.fi-teal{background:linear-gradient(135deg,#00695C,#4DB6AC);}
+.fi-red{background:linear-gradient(135deg,#C62828,#EF5350);}
+.feature-item span{font-size:12px;color:var(--text-secondary);font-weight:500;}
+/* Hot Spots */
+.hot-spots{
+  display:flex;gap:12px;padding:0 16px;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;margin-bottom:20px;
+  scroll-snap-type:x mandatory;
+}
+.hot-spots::-webkit-scrollbar{display:none;}
+.spot-card{
+  min-width:200px;border-radius:var(--radius);overflow:hidden;
+  background:var(--bg-card);box-shadow:var(--shadow);flex-shrink:0;
+  scroll-snap-align:start;cursor:pointer;transition:transform 0.2s;
+}
+.spot-card:active{transform:scale(0.97);}
+.spot-img{
+  height:120px;position:relative;
+}
+.spot-img-1{background:linear-gradient(135deg,#1B5E20,#4CAF50,#A5D6A7);}
+.spot-img-2{background:linear-gradient(135deg,#0D47A1,#42A5F5,#90CAF9);}
+.spot-img-3{background:linear-gradient(135deg,#E65100,#FF9800,#FFE0B2);}
+.spot-img-4{background:linear-gradient(135deg,#004D40,#26A69A,#B2DFDB);}
+.spot-badge{
+  position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.5);
+  color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;
+  backdrop-filter:blur(4px);
+}
+.spot-info{padding:10px 12px;}
+.spot-info h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.spot-info p{font-size:11px;color:var(--text-tertiary);display:flex;align-items:center;gap:4px;}
+.spot-info .rating{color:var(--accent);font-weight:600;font-size:12px;}
+/* Routes Section */
+.route-cards{
+  padding:0 16px;display:flex;flex-direction:column;gap:12px;
+  margin-bottom:20px;
+}
+.route-card{
+  border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);padding:14px;display:flex;gap:12px;
+  cursor:pointer;transition:transform 0.2s;
+}
+.route-card:active{transform:scale(0.98);}
+.route-icon{
+  width:56px;height:56px;border-radius:var(--radius-sm);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.route-icon svg{width:28px;height:28px;color:#fff;}
+.ri-1{background:linear-gradient(135deg,#2E7D32,#66BB6A);}
+.ri-2{background:linear-gradient(135deg,#1565C0,#42A5F5);}
+.ri-3{background:linear-gradient(135deg,#FF8F00,#FFB300);}
+.route-info{flex:1;display:flex;flex-direction:column;justify-content:center;}
+.route-info h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.route-info p{font-size:11px;color:var(--text-tertiary);}
+.route-info .tags{display:flex;gap:6px;margin-top:6px;}
+.route-info .tag{
+  font-size:10px;padding:2px 8px;border-radius:10px;
+  background:var(--bg-section);color:var(--primary);
+}
+/* Tips Section */
+.tips-list{padding:0 16px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.tip-card{
+  border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);overflow:hidden;cursor:pointer;
+  transition:transform 0.2s;display:flex;
+}
+.tip-card:active{transform:scale(0.98);}
+.tip-img{width:100px;flex-shrink:0;}
+.tip-img-1{background:linear-gradient(135deg,#81C784,#4CAF50);}
+.tip-img-2{background:linear-gradient(135deg,#FFB300,#FF8F00);}
+.tip-img-3{background:linear-gradient(135deg,#42A5F5,#1565C0);}
+.tip-content{padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.tip-content h4{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4;}
+.tip-content p{font-size:11px;color:var(--text-tertiary);}
+.tip-content .meta{font-size:10px;color:var(--text-tertiary);margin-top:6px;display:flex;gap:10px;}
+/* ===== TICKET PAGE ===== */
+.ticket-scenic{
+  margin:16px;border-radius:var(--radius-lg);overflow:hidden;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  padding:20px;color:#fff;position:relative;
+}
+.ticket-scenic::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,0.1);
+}
+.ticket-scenic h2{font-size:20px;font-weight:700;position:relative;z-index:1;}
+.ticket-scenic .rating-row{
+  display:flex;align-items:center;gap:8px;margin-top:8px;
+  font-size:13px;position:relative;z-index:1;
+}
+.ticket-scenic .stars{color:var(--accent-light);}
+.ticket-scenic .open{font-size:12px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px;}
+.date-selector{
+  display:flex;gap:8px;padding:16px;overflow-x:auto;
+}
+.date-selector::-webkit-scrollbar{display:none;}
+.date-item{
+  min-width:60px;padding:10px 8px;border-radius:var(--radius-sm);
+  background:var(--bg-card);box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;transition:all 0.2s;border:2px solid transparent;
+}
+.date-item.active{border-color:var(--primary);background:var(--bg-section);}
+.date-item span{font-size:11px;color:var(--text-tertiary);}
+.date-item strong{font-size:16px;font-weight:700;color:var(--text-primary);}
+.date-item.active strong{color:var(--primary);}
+.date-item small{font-size:10px;color:var(--text-tertiary);}
+.ticket-list{padding:0 16px;display:flex;flex-direction:column;gap:12px;}
+.ticket-item{
+  border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);padding:16px;cursor:pointer;
+  transition:transform 0.2s;
+}
+.ticket-item:active{transform:scale(0.98);}
+.ticket-item .name-row{display:flex;justify-content:space-between;align-items:center;}
+.ticket-item h4{font-size:15px;font-weight:600;}
+.ticket-item .price{color:var(--accent);font-size:18px;font-weight:700;}
+.ticket-item .price small{font-size:11px;font-weight:400;}
+.ticket-item .desc{font-size:12px;color:var(--text-tertiary);margin-top:6px;}
+.ticket-item .tags{display:flex;gap:6px;margin-top:8px;}
+.ticket-item .tag{
+  font-size:10px;padding:2px 8px;border-radius:10px;
+  background:#FFF3E0;color:#E65100;
+}
+.buy-btn{
+  margin:20px 16px;height:48px;border-radius:24px;border:none;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 12px rgba(46,125,50,0.3);
+  transition:transform 0.2s;
+}
+.buy-btn:active{transform:scale(0.97);}
+/* ===== GUIDE PAGE ===== */
+.map-container{
+  margin:0;height:calc(100vh - 44px - 56px);position:relative;
+  background:linear-gradient(180deg,#E8F5E9 0%,#C8E6C9 40%,#A5D6A7 100%);
+  overflow:hidden;
+}
+.map-water{position:absolute;top:30%;left:20%;width:60%;height:30%;border-radius:50%;background:linear-gradient(135deg,#42A5F5,#90CAF9);opacity:0.5;}
+.map-road{position:absolute;top:0;left:50%;width:2px;height:100%;background:rgba(0,0,0,0.1);}
+.map-road-h{position:absolute;top:55%;left:0;width:100%;height:2px;background:rgba(0,0,0,0.1);}
+.map-mountain-1{position:absolute;top:15%;left:10%;width:80px;height:60px;background:#66BB6A;clip-path:polygon(50% 0%,0% 100%,100% 100%);}
+.map-mountain-2{position:absolute;top:10%;right:15%;width:60px;height:80px;background:#4CAF50;clip-path:polygon(50% 0%,0% 100%,100% 100%);}
+.map-mountain-3{position:absolute;top:20%;left:40%;width:70px;height:50px;background:#81C784;clip-path:polygon(50% 0%,0% 100%,100% 100%);}
+.map-marker{
+  position:absolute;display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:transform 0.2s;z-index:10;
+}
+.map-marker:active{transform:scale(1.15);}
+.map-marker .pin{
+  width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+.map-marker .pin span{transform:rotate(45deg);font-size:11px;color:#fff;font-weight:700;}
+.map-marker .label{
+  margin-top:4px;font-size:10px;background:rgba(255,255,255,0.9);
+  padding:2px 6px;border-radius:4px;white-space:nowrap;
+  box-shadow:0 1px 4px rgba(0,0,0,0.1);font-weight:500;
+}
+.map-controls{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:8px;z-index:20;
+}
+.map-ctrl-btn{
+  width:40px;height:40px;border-radius:50%;background:#fff;
+  border:none;box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:transform 0.2s;
+}
+.map-ctrl-btn:active{transform:scale(0.9);}
+.map-ctrl-btn svg{width:20px;height:20px;color:var(--text-primary);}
+/* Bottom Route Panel */
+.route-panel{
+  position:absolute;bottom:0;left:0;right:0;z-index:30;
+  background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.1);
+  padding:16px;max-height:45%;
+}
+.route-panel-handle{
+  width:36px;height:4px;border-radius:2px;background:var(--border);
+  margin:0 auto 12px;
+}
+.route-panel h3{font-size:15px;font-weight:700;margin-bottom:12px;}
+.route-options{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;}
+.route-options::-webkit-scrollbar{display:none;}
+.route-opt{
+  min-width:140px;padding:12px;border-radius:var(--radius-sm);
+  border:2px solid var(--border);cursor:pointer;transition:all 0.2s;
+  flex-shrink:0;
+}
+.route-opt.active{border-color:var(--primary);background:var(--bg-section);}
+.route-opt h5{font-size:13px;font-weight:600;margin-bottom:4px;}
+.route-opt p{font-size:11px;color:var(--text-tertiary);}
+.route-opt .meta{font-size:10px;color:var(--primary);margin-top:4px;font-weight:500;}
+/* Speech FAB */
+.speech-fab{
+  position:absolute;bottom:200px;left:12px;z-index:25;
+  width:48px;height:48px;border-radius:50%;border:none;
+  background:var(--primary);color:#fff;cursor:pointer;
+  box-shadow:0 4px 12px rgba(46,125,50,0.4);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.2s;
+}
+.speech-fab:active{transform:scale(0.9);}
+.speech-fab svg{width:24px;height:24px;}
+.speech-fab.playing{
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 4px 12px rgba(46,125,50,0.4);}
+  50%{box-shadow:0 4px 24px rgba(46,125,50,0.7);}
+}
+/* ===== ORDER PAGE ===== */
+.order-tabs{
+  display:flex;padding:0 16px;gap:0;border-bottom:1px solid var(--border);
+  margin-bottom:16px;background:#fff;
+}
+.order-tab{
+  flex:1;text-align:center;padding:12px 0;font-size:14px;
+  color:var(--text-tertiary);cursor:pointer;position:relative;
+  transition:color 0.2s;font-weight:500;
+}
+.order-tab.active{color:var(--primary);font-weight:600;}
+.order-tab.active::after{
+  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:24px;height:3px;border-radius:1.5px;background:var(--primary);
+}
+.order-list{padding:0 16px;display:flex;flex-direction:column;gap:12px;}
+.order-card{
+  border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);padding:14px;cursor:pointer;
+  transition:transform 0.2s;
+}
+.order-card:active{transform:scale(0.98);}
+.order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.order-header .scenic{font-size:14px;font-weight:600;}
+.order-header .status{font-size:12px;color:var(--primary);font-weight:500;}
+.order-body{display:flex;gap:12px;}
+.order-thumb{
+  width:72px;height:72px;border-radius:var(--radius-sm);flex-shrink:0;
+}
+.ot-1{background:linear-gradient(135deg,#2E7D32,#66BB6A);}
+.ot-2{background:linear-gradient(135deg,#1565C0,#42A5F5);}
+.ot-3{background:linear-gradient(135deg,#FF8F00,#FFB300);}
+.order-detail{flex:1;display:flex;flex-direction:column;justify-content:center;}
+.order-detail h5{font-size:13px;font-weight:600;margin-bottom:4px;}
+.order-detail p{font-size:11px;color:var(--text-tertiary);}
+.order-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
+}
+.order-footer .total{font-size:12px;color:var(--text-tertiary);}
+.order-footer .total strong{color:var(--accent);font-size:16px;}
+.order-footer .action-btn{
+  padding:6px 16px;border-radius:16px;border:1.5px solid var(--primary);
+  background:transparent;color:var(--primary);font-size:12px;
+  font-weight:500;cursor:pointer;transition:all 0.2s;
+}
+.order-footer .action-btn:active{background:var(--primary);color:#fff;}
+/* ===== PROFILE PAGE ===== */
+.profile-header{
+  padding:20px 16px;background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  display:flex;align-items:center;gap:14px;color:#fff;
+  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  position:relative;overflow:hidden;
+}
+.profile-header::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,0.1);
+}
+.avatar{
+  width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border:2px solid rgba(255,255,255,0.5);
+}
+.avatar svg{width:32px;height:32px;color:#fff;}
+.profile-info h3{font-size:18px;font-weight:700;position:relative;z-index:1;}
+.profile-info p{font-size:12px;opacity:0.8;position:relative;z-index:1;margin-top:2px;}
+.profile-stats{
+  display:flex;padding:16px;background:var(--bg-card);
+  margin:12px 16px;border-radius:var(--radius);box-shadow:var(--shadow);
+}
+.profile-stat{
+  flex:1;text-align:center;border-right:1px solid var(--border);
+}
+.profile-stat:last-child{border-right:none;}
+.profile-stat strong{font-size:20px;color:var(--primary);display:block;}
+.profile-stat span{font-size:11px;color:var(--text-tertiary);margin-top:2px;display:block;}
+.menu-list{
+  margin:0 16px;border-radius:var(--radius);background:var(--bg-card);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.menu-item{
+  display:flex;align-items:center;padding:14px 16px;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  transition:background 0.2s;
+}
+.menu-item:last-child{border-bottom:none;}
+.menu-item:active{background:var(--bg);}
+.menu-item svg{width:20px;height:20px;color:var(--primary);margin-right:12px;}
+.menu-item span{flex:1;font-size:14px;}
+.menu-item .arrow{color:var(--text-tertiary);font-size:12px;}
+/* ===== TAB BAR ===== */
+.tab-bar{
+  display:flex;height:var(--tab-height);background:#fff;
+  border-top:1px solid var(--border);flex-shrink:0;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;cursor:pointer;
+  transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+}
+.tab-item svg{width:22px;height:22px;color:var(--text-tertiary);transition:color 0.2s;}
+.tab-item span{font-size:10px;color:var(--text-tertiary);font-weight:500;transition:color 0.2s;}
+.tab-item.active svg{color:var(--primary);}
+.tab-item.active span{color:var(--primary);font-weight:600;}
+/* ===== MODAL ===== */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);z-index:200;display:none;
+  align-items:flex-end;justify-content:center;
+}
+.modal-overlay.show{display:flex;}
+.modal-content{
+  width:100%;max-width:430px;background:#fff;
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  max-height:80vh;overflow-y:auto;
+  animation:slideUp 0.3s cubic-bezier(0,0,0.4,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px;border-bottom:1px solid var(--border);
+}
+.modal-header h3{font-size:17px;font-weight:700;}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;background:var(--bg);
+  border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:16px;color:var(--text-secondary);
+}
+.modal-body{padding:16px;}
+/* Spot Detail Modal */
+.spot-detail-hero{
+  height:160px;border-radius:var(--radius);margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.spot-detail-hero .gradient{
+  position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(transparent,rgba(0,0,0,0.5));
+}
+.spot-detail-hero h3{
+  position:absolute;bottom:12px;left:14px;color:#fff;font-size:18px;
+  font-weight:700;
+}
+.spot-detail-info{display:flex;flex-direction:column;gap:12px;}
+.spot-detail-info .info-row{
+  display:flex;align-items:flex-start;gap:10px;
+}
+.spot-detail-info .info-icon{
+  width:20px;height:20px;flex-shrink:0;color:var(--primary);margin-top:1px;
+}
+.spot-detail-info .info-text h5{font-size:13px;font-weight:600;margin-bottom:2px;}
+.spot-detail-info .info-text p{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
+.speech-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;height:44px;border-radius:22px;border:none;
+  background:var(--primary);color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:12px;transition:transform 0.2s;
+}
+.speech-btn:active{transform:scale(0.97);}
+.speech-btn svg{width:18px;height:18px;}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="time">9:41</div>
+    <div class="capsule">
+      <div class="capsule-bar"></div>
+      <div class="capsule-line"></div>
+      <div class="capsule-close"></div>
+    </div>
+  </div>
+  <!-- Content Area -->
+  <div class="content-area" id="contentArea">
+    <!-- ===== HOME PAGE ===== -->
+    <div class="page active" id="pageHome">
+      <div class="home-header">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span>搜索景点、路线、攻略...</span>
+        </div>
+        <div class="header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+      </div>
+      <!-- Banner -->
+      <div class="banner">
+        <h2>翠云山国家森林公园</h2>
+        <p>天然氧吧 · 万亩竹海 · 飞瀑流泉</p>
+        <div class="banner-dots">
+          <span class="active"></span><span></span><span></span>
+        </div>
+      </div>
+      <!-- Feature Grid -->
+      <div class="section-title">快捷服务</div>
+      <div class="feature-grid">
+        <div class="feature-item" onclick="switchTab(1)">
+          <div class="feature-icon fi-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <span>票务预约</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon fi-orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <span>文创好物</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon fi-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+          <span>特色餐饮</span>
+        </div>
+        <div class="feature-item" onclick="switchTab(2)">
+          <div class="feature-icon fi-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          </div>
+          <span>游览线路</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon fi-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span>热门景点</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon fi-red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <span>旅游攻略</span>
+        </div>
+      </div>
+      <!-- Hot Spots -->
+      <div class="section-title">热门景点 <span class="more">查看全部 ></span></div>
+      <div class="hot-spots">
+        <div class="spot-card" onclick="openSpotDetail('飞瀑流泉','壮观的天然瀑布群，落差达80余米，水声轰鸣，雾气氤氲，夏日避暑绝佳去处。瀑布周边栈道设施完善，可近距离感受飞瀑的震撼。','spot-img-1')">
+          <div class="spot-img spot-img-1"><div class="spot-badge">TOP 1</div></div>
+          <div class="spot-info">
+            <h4>飞瀑流泉</h4>
+            <p><span class="rating">4.9</span> · 距入口1.2km</p>
+          </div>
+        </div>
+        <div class="spot-card" onclick="openSpotDetail('翠云竹海','万亩竹海郁郁葱葱，清风吹拂竹叶沙沙作响，是天然的森林氧吧。竹林间设有多处休憩亭和拍照打卡点。','spot-img-2')">
+          <div class="spot-img spot-img-2"><div class="spot-badge">TOP 2</div></div>
+          <div class="spot-info">
+            <h4>翠云竹海</h4>
+            <p><span class="rating">4.8</span> · 距入口2.5km</p>
+          </div>
+        </div>
+        <div class="spot-card" onclick="openSpotDetail('金顶日出','海拔1860米的金顶是观赏日出的最佳地点。清晨云海翻涌，红日从云层中缓缓升起，美不胜收。','spot-img-3')">
+          <div class="spot-img spot-img-3"><div class="spot-badge">TOP 3</div></div>
+          <div class="spot-info">
+            <h4>金顶日出</h4>
+            <p><span class="rating">4.9</span> · 距入口5.8km</p>
+          </div>
+        </div>
+        <div class="spot-card" onclick="openSpotDetail('古栈道','始建于明清时期的悬崖栈道，全长3公里，沿途可欣赏峡谷风光。栈道修缮完善，安全扶手齐全。','spot-img-4')">
+          <div class="spot-img spot-img-4"><div class="spot-badge">TOP 4</div></div>
+          <div class="spot-info">
+            <h4>古栈道</h4>
+            <p><span class="rating">4.7</span> · 距入口3.6km</p>
+          </div>
+        </div>
+      </div>
+      <!-- Routes -->
+      <div class="section-title">推荐线路</div>
+      <div class="route-cards">
+        <div class="route-card">
+          <div class="route-icon ri-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="route-info">
+            <h4>精华半日游</h4>
+            <p>游览时间约3小时，含飞瀑流泉、翠云竹海</p>
+            <div class="tags"><span class="tag">轻松</span><span class="tag">3小时</span><span class="tag">3.5km</span></div>
+          </div>
+        </div>
+        <div class="route-card">
+          <div class="route-icon ri-2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="route-info">
+            <h4>深度全景游</h4>
+            <p>游览时间约6小时，覆盖全部核心景点</p>
+            <div class="tags"><span class="tag">适中</span><span class="tag">6小时</span><span class="tag">8.2km</span></div>
+          </div>
+        </div>
+        <div class="route-card">
+          <div class="route-icon ri-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="route-info">
+            <h4>亲子欢乐游</h4>
+            <p>游览时间约4小时，轻松平缓适合亲子</p>
+            <div class="tags"><span class="tag">亲子</span><span class="tag">4小时</span><span class="tag">4.0km</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Tips -->
+      <div class="section-title">旅游攻略</div>
+      <div class="tips-list">
+        <div class="tip-card">
+          <div class="tip-img tip-img-1"></div>
+          <div class="tip-content">
+            <h4>翠云山一日游完全攻略：路线+美食+拍照</h4>
+            <div class="meta"><span>浏览 2.3w</span><span>收藏 1.2k</span></div>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-img tip-img-2"></div>
+          <div class="tip-content">
+            <h4>秋季翠云山红叶观赏指南，最佳时间+地点</h4>
+            <div class="meta"><span>浏览 1.8w</span><span>收藏 856</span></div>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-img tip-img-3"></div>
+          <div class="tip-content">
+            <h4>金顶日出拍摄技巧，手机也能拍大片</h4>
+            <div class="meta"><span>浏览 1.5w</span><span>收藏 623</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== TICKET PAGE ===== -->
+    <div class="page" id="pageTicket">
+      <div class="ticket-scenic">
+        <h2>翠云山国家森林公园</h2>
+        <div class="rating-row">
+          <span class="stars">★★★★★</span>
+          <span>4.8分</span>
+          <span>1.2万条评价</span>
+          <span class="open">营业中</span>
+        </div>
+      </div>
+      <div class="section-title">选择日期</div>
+      <div class="date-selector" id="dateSelector"></div>
+      <div class="section-title">选择票种</div>
+      <div class="ticket-list">
+        <div class="ticket-item">
+          <div class="name-row">
+            <h4>成人票</h4>
+            <div class="price"><small>¥</small>128</div>
+          </div>
+          <div class="desc">含景区大门票 + 环保车往返</div>
+          <div class="tags"><span class="tag">即时出票</span><span class="tag">随买随用</span></div>
+        </div>
+        <div class="ticket-item">
+          <div class="name-row">
+            <h4>学生票</h4>
+            <div class="price"><small>¥</small>68</div>
+          </div>
+          <div class="desc">含景区大门票 + 环保车往返（需凭证）</div>
+          <div class="tags"><span class="tag">学生优惠</span><span class="tag">凭证入园</span></div>
+        </div>
+        <div class="ticket-item">
+          <div class="name-row">
+            <h4>老人票（60岁以上）</h4>
+            <div class="price"><small>¥</small>45</div>
+          </div>
+          <div class="desc">含景区大门票 + 环保车往返</div>
+          <div class="tags"><span class="tag">长者优惠</span><span class="tag">凭证入园</span></div>
+        </div>
+        <div class="ticket-item">
+          <div class="name-row">
+            <h4>亲子套票（1大1小）</h4>
+            <div class="price"><small>¥</small>168</div>
+          </div>
+          <div class="desc">含1张成人票 + 1张儿童票 + 环保车</div>
+          <div class="tags"><span class="tag">超值推荐</span><span class="tag">立省88元</span></div>
+        </div>
+        <div class="ticket-item">
+          <div class="name-row">
+            <h4>全景通票</h4>
+            <div class="price"><small>¥</small>258</div>
+          </div>
+          <div class="desc">含大门票 + 索道往返 + 环保车 + 金顶观景</div>
+          <div class="tags"><span class="tag">一票通玩</span><span class="tag">热门</span></div>
+        </div>
+      </div>
+      <button class="buy-btn" onclick="alert('已加入订单，请在订单页面查看')">立即预约</button>
+    </div>
+    <!-- ===== GUIDE PAGE ===== -->
+    <div class="page" id="pageGuide">
+      <div class="map-container">
+        <!-- Map Elements -->
+        <div class="map-water"></div>
+        <div class="map-road"></div>
+        <div class="map-road-h"></div>
+        <div class="map-mountain-1"></div>
+        <div class="map-mountain-2"></div>
+        <div class="map-mountain-3"></div>
+        <!-- Markers -->
+        <div class="map-marker" style="top:22%;left:18%;" onclick="openSpotDetail('飞瀑流泉','壮观的天然瀑布群，落差达80余米，水声轰鸣，雾气氤氲，夏日避暑绝佳去处。瀑布周边栈道设施完善，可近距离感受飞瀑的震撼。','spot-img-1')">
+          <div class="pin"><span>1</span></div>
+          <div class="label">飞瀑流泉</div>
+        </div>
+        <div class="map-marker" style="top:35%;left:55%;" onclick="openSpotDetail('翠云竹海','万亩竹海郁郁葱葱，清风吹拂竹叶沙沙作响，是天然的森林氧吧。竹林间设有多处休憩亭和拍照打卡点。','spot-img-2')">
+          <div class="pin"><span>2</span></div>
+          <div class="label">翠云竹海</div>
+        </div>
+        <div class="map-marker" style="top:12%;left:72%;" onclick="openSpotDetail('金顶日出','海拔1860米的金顶是观赏日出的最佳地点。清晨云海翻涌，红日从云层中缓缓升起，美不胜收。','spot-img-3')">
+          <div class="pin"><span>3</span></div>
+          <div class="label">金顶日出</div>
+        </div>
+        <div class="map-marker" style="top:50%;left:32%;" onclick="openSpotDetail('古栈道','始建于明清时期的悬崖栈道，全长3公里，沿途可欣赏峡谷风光。栈道修缮完善，安全扶手齐全。','spot-img-4')">
+          <div class="pin"><span>4</span></div>
+          <div class="label">古栈道</div>
+        </div>
+        <div class="map-marker" style="top:42%;left:80%;" onclick="openSpotDetail('天池','海拔1500米的高山湖泊，水质清澈见底，四周群山环绕，倒影如画。','spot-img-1')">
+          <div class="pin"><span>5</span></div>
+          <div class="label">天池</div>
+        </div>
+        <!-- Map Controls -->
+        <div class="map-controls">
+          <button class="map-ctrl-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </button>
+          <button class="map-ctrl-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </button>
+          <button class="map-ctrl-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </button>
+        </div>
+        <!-- Speech FAB -->
+        <button class="speech-fab" id="speechFab" onclick="toggleSpeech()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+        <!-- Route Panel -->
+        <div class="route-panel">
+          <div class="route-panel-handle"></div>
+          <h3>智能路线推荐</h3>
+          <div class="route-options">
+            <div class="route-opt active">
+              <h5>精华半日游</h5>
+              <p>飞瀑流泉→翠云竹海</p>
+              <div class="meta">3小时 · 3.5km · 2景点</div>
+            </div>
+            <div class="route-opt">
+              <h5>深度全景游</h5>
+              <p>环线游览全部景点</p>
+              <div class="meta">6小时 · 8.2km · 5景点</div>
+            </div>
+            <div class="route-opt">
+              <h5>亲子欢乐游</h5>
+              <p>平缓栈道轻松游</p>
+              <div class="meta">4小时 · 4.0km · 3景点</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== ORDER PAGE ===== -->
+    <div class="page" id="pageOrder">
+      <div style="padding:12px 16px 0;"><h2 style="font-size:22px;font-weight:700;">我的订单</h2></div>
+      <div class="order-tabs">
+        <div class="order-tab active" onclick="switchOrderTab(this)">全部</div>
+        <div class="order-tab" onclick="switchOrderTab(this)">待使用</div>
+        <div class="order-tab" onclick="switchOrderTab(this)">已完成</div>
+        <div class="order-tab" onclick="switchOrderTab(this)">退款</div>
+      </div>
+      <div class="order-list">
+        <div class="order-card">
+          <div class="order-header">
+            <span class="scenic">翠云山国家森林公园</span>
+            <span class="status">待使用</span>
+          </div>
+          <div class="order-body">
+            <div class="order-thumb ot-1"></div>
+            <div class="order-detail">
+              <h5>成人票 x2</h5>
+              <p>2026年6月15日 · 随时入园</p>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="total">合计：<strong>¥256</strong></div>
+            <button class="action-btn">查看二维码</button>
+          </div>
+        </div>
+        <div class="order-card">
+          <div class="order-header">
+            <span class="scenic">翠云山国家森林公园</span>
+            <span class="status">已完成</span>
+          </div>
+          <div class="order-body">
+            <div class="order-thumb ot-2"></div>
+            <div class="order-detail">
+              <h5>全景通票 x1</h5>
+              <p>2026年5月20日 · 已使用</p>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="total">合计：<strong>¥258</strong></div>
+            <button class="action-btn">再次购买</button>
+          </div>
+        </div>
+        <div class="order-card">
+          <div class="order-header">
+            <span class="scenic">翠云山文创店</span>
+            <span class="status" style="color:var(--accent)">待发货</span>
+          </div>
+          <div class="order-body">
+            <div class="order-thumb ot-3"></div>
+            <div class="order-detail">
+              <h5>翠云山竹编手工套盒 x1</h5>
+              <p>预计6月12日送达</p>
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="total">合计：<strong>¥89</strong></div>
+            <button class="action-btn">查看物流</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== PROFILE PAGE ===== -->
+    <div class="page" id="pageProfile">
+      <div class="profile-header">
+        <div class="avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="profile-info">
+          <h3>旅行者小绿</h3>
+          <p>探索自然 · 发现美好</p>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><strong>5</strong><span>收藏</span></div>
+        <div class="profile-stat"><strong>12</strong><span>足迹</span></div>
+        <div class="profile-stat"><strong>3</strong><span>评价</span></div>
+        <div class="profile-stat"><strong>2</strong><span>优惠券</span></div>
+      </div>
+      <div class="menu-list" style="margin-top:16px;">
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span>我的收藏</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>我的评价</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>支付管理</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>设置</span>
+          <span class="arrow">›</span>
+        </div>
+      </div>
+      <div class="menu-list" style="margin-top:12px;">
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>帮助与反馈</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>关于景区</span>
+          <span class="arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>
+      <span>门票</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      <span>导览</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>订单</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(4)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>我的</span>
+    </div>
+  </div>
+</div>
+<!-- Spot Detail Modal -->
+<div class="modal-overlay" id="spotModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>景点详情</h3>
+      <button class="modal-close" onclick="closeSpotDetail()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="spot-detail-hero" id="spotHero">
+        <div class="gradient"></div>
+        <h3 id="spotTitle"></h3>
+      </div>
+      <div class="spot-detail-info">
+        <div class="info-row">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div class="info-text">
+            <h5>开放时间</h5>
+            <p>08:00 - 18:00（旺季至19:00）</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div class="info-text">
+            <h5>景点介绍</h5>
+            <p id="spotDesc"></p>
+          </div>
+        </div>
+        <div class="info-row">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div class="info-text">
+            <h5>游览建议</h5>
+            <p>建议游览时间1-2小时，穿舒适运动鞋，携带饮用水。夏季注意防晒。</p>
+          </div>
+        </div>
+      </div>
+      <button class="speech-btn" onclick="speakSpot()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        语音播报景点介绍
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+// Tab Switching
+const pages = ['pageHome','pageTicket','pageGuide','pageOrder','pageProfile'];
+const tabs = document.querySelectorAll('.tab-item');
+function switchTab(idx){
+  pages.forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('active',i===idx);
+  });
+  tabs.forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.getElementById('contentArea').scrollTop=0;
+}
+// Date Selector
+(function(){
+  const ds=document.getElementById('dateSelector');
+  const today=new Date();
+  const days=['日','一','二','三','四','五','六'];
+  for(let i=0;i<7;i++){
+    const d=new Date(today);d.setDate(d.getDate()+i);
+    const el=document.createElement('div');
+    el.className='date-item'+(i===0?' active':'');
+    el.innerHTML='<span>周'+days[d.getDay()]+'</span><strong>'+d.getDate()+'</strong><small>'+(d.getMonth()+1)+'月</small>';
+    el.onclick=function(){
+      document.querySelectorAll('.date-item').forEach(x=>x.classList.remove('active'));
+      this.classList.add('active');
+    };
+    ds.appendChild(el);
+  }
+})();
+// Order Tab
+function switchOrderTab(el){
+  document.querySelectorAll('.order-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+// Route Options
+document.querySelectorAll('.route-opt').forEach(opt=>{
+  opt.onclick=function(){
+    document.querySelectorAll('.route-opt').forEach(o=>o.classList.remove('active'));
+    this.classList.add('active');
+  };
+});
+// Spot Detail Modal
+let currentSpot={name:'',desc:''};
+function openSpotDetail(name,desc,imgClass){
+  currentSpot={name,desc};
+  document.getElementById('spotTitle').textContent=name;
+  document.getElementById('spotDesc').textContent=desc;
+  const hero=document.getElementById('spotHero');
+  hero.className='spot-detail-hero '+imgClass;
+  document.getElementById('spotModal').classList.add('show');
+}
+function closeSpotDetail(){
+  document.getElementById('spotModal').classList.remove('show');
+  window.speechSynthesis.cancel();
+  document.getElementById('speechFab').classList.remove('playing');
+}
+document.getElementById('spotModal').onclick=function(e){
+  if(e.target===this)closeSpotDetail();
+};
+// Speech (Web Speech API for prototype; SpeechKit in actual HarmonyOS)
+let isSpeaking=false;
+function speakSpot(){
+  const u=new SpeechSynthesisUtterance(currentSpot.name+'。'+currentSpot.desc);
+  u.lang='zh-CN';u.rate=0.9;
+  u.onend=()=>{isSpeaking=false;document.getElementById('speechFab').classList.remove('playing');};
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+  isSpeaking=true;
+  document.getElementById('speechFab').classList.add('playing');
+}
+function toggleSpeech(){
+  if(isSpeaking){
+    window.speechSynthesis.cancel();
+    isSpeaking=false;
+    document.getElementById('speechFab').classList.remove('playing');
+  }else{
+    speakSpot();
+  }
+}
+</script>
+</body>
+</html>
